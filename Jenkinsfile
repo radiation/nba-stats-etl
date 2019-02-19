@@ -39,6 +39,9 @@ pipeline {
         container('maven') {
 
           // ensure we're not on a detached head
+          sh "java -version"
+          sh "scala -version"
+          sh "mvn -version"
           sh "git checkout master"
           sh "git config --global credential.helper store"
           sh "jx step git credentials"
