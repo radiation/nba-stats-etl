@@ -1,0 +1,30 @@
+apiVersion: skaffold/v1beta2
+kind: Config
+build:
+  artifacts:
+  - image: changeme
+    context: .
+    docker: {}
+  tagPolicy:
+    envTemplate:
+      template: '{{.DOCKER_REGISTRY}}/radiation/nba-stats-etl:{{.VERSION}}'
+  local: {}
+deploy:
+  kubectl: {}
+profiles:
+- name: dev
+  build:
+    artifacts:
+    - docker: {}
+    tagPolicy:
+      envTemplate:
+        template: '{{.DOCKER_REGISTRY}}/radiation/nba-stats-etl:{{.DIGEST_HEX}}'
+    local: {}
+  deploy:
+    helm:
+      releases:
+      - name: nba-stats-etl
+        chartPath: charts/nba-stats-etl
+        setValueTemplates:
+          image.repository: '{{.DOCKER_REGISTRY}}/radiation/nba-stats-etl'
+          image.tag: '{{.DIGEST_HEX}}'
